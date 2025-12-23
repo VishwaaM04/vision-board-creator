@@ -3,71 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vision Board Creator</title>
+    <title>✨ Futuristic Vision Board 2025</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>✨ Vision Board Creator</h1>
-            <p>Create your personalized vision board and download it instantly</p>
+            <div class="header-content">
+                <h1>🚀 Vision Board Creator 2025</h1>
+                <p class="subtitle">Transform Your Dreams Into Reality</p>
+                <div class="floating-orbs"></div>
+            </div>
         </header>
 
-        <main>
-            <div class="form-section">
-                <h2>Your Vision Board Details</h2>
-                <form id="boardForm">
-                    <div class="form-group">
-                        <label for="title">Board Title</label>
-                        <input type="text" id="title" placeholder="e.g., My 2025 Goals" required>
-                    </div>
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">Create Your Vision Board</div>
+                
+                <div class="form-group">
+                    <label for="boardTitle">Vision Board Title</label>
+                    <input type="text" id="boardTitle" placeholder="e.g., My 2025 Goals" />
+                </div>
 
-                    <div class="form-group">
-                        <label for="goals">Your Goals (one per line)</label>
-                        <textarea id="goals" placeholder="Enter your goals...&#10;- Goal 1&#10;- Goal 2&#10;- Goal 3" rows="5" required></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="visionGoals">Enter Your Vision</label>
+                    <textarea id="visionGoals" placeholder="Format: Category&#10;Goal 1, Goal 2, Goal 3&#10;&#10;Example:&#10;Food & Supplements&#10;3L of water per day, Fish Oil, Meat 5 days a week&#10;&#10;Inner Peace&#10;Cycling 2 days a week, Swimming once a week"></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="theme">Choose Theme Color</label>
-                        <div class="color-selector">
-                            <input type="color" id="themeColor" value="#6366f1" title="Theme Color">
-                            <span id="colorValue">#6366f1</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bgColor">Background Color</label>
-                        <div class="color-selector">
-                            <input type="color" id="bgColor" value="#ffffff" title="Background Color">
-                            <span id="bgColorValue">#ffffff</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="imageUrl">Inspiration Image URL (Optional)</label>
-                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="affirmation">Daily Affirmation</label>
-                        <textarea id="affirmation" placeholder="Enter an inspirational message..." rows="3"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-generate">Generate Vision Board</button>
-                </form>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="generateBoard()">
+                        <i class="fas fa-magic"></i> Generate Board
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAll()">
+                        <i class="fas fa-redo"></i> Clear
+                    </button>
+                </div>
+                <div id="message" class="message"></div>
             </div>
 
-            <div class="preview-section">
-                <h2>Preview</h2>
-                <div id="visionBoard" class="vision-board">
-                    <p style="text-align: center; color: #999; padding: 40px;">Your vision board will appear here</p>
-                </div>
-                <div class="download-options" id="downloadOptions" style="display: none;">
-                    <button class="btn-download" onclick="downloadBoard('png')">📥 Download as PNG</button>
-                    <button class="btn-download" onclick="downloadBoard('jpeg')">📥 Download as JPEG</button>
+            <div id="boardContainer" class="board-container" style="display:none;">
+                <div class="board-title" id="boardTitle" style="font-size: 2.5em; margin-bottom: 40px;"></div>
+                <div id="categoriesGrid" class="categories-grid"></div>
+                
+                <div class="button-group" style="margin-top: 40px;">
+                    <button class="btn btn-primary" onclick="downloadBoard()">
+                        <i class="fas fa-download"></i> Download Board
+                    </button>
+                    <button class="btn btn-secondary" onclick="shareBoard()">
+                        <i class="fas fa-share"></i> Share
+                    </button>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Created with <span style="color: #ff6b9d;">❤</span> | Powered by Vision Board API</p>
     </div>
 
     <script src="script.js"></script>
