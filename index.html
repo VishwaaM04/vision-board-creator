@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Board Creator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ Vision Board Creator</h1>
+            <p>Create your personalized vision board and download it instantly</p>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <h2>Your Vision Board Details</h2>
+                <form id="boardForm">
+                    <div class="form-group">
+                        <label for="title">Board Title</label>
+                        <input type="text" id="title" placeholder="e.g., My 2025 Goals" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goals">Your Goals (one per line)</label>
+                        <textarea id="goals" placeholder="Enter your goals...&#10;- Goal 1&#10;- Goal 2&#10;- Goal 3" rows="5" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="theme">Choose Theme Color</label>
+                        <div class="color-selector">
+                            <input type="color" id="themeColor" value="#6366f1" title="Theme Color">
+                            <span id="colorValue">#6366f1</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bgColor">Background Color</label>
+                        <div class="color-selector">
+                            <input type="color" id="bgColor" value="#ffffff" title="Background Color">
+                            <span id="bgColorValue">#ffffff</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUrl">Inspiration Image URL (Optional)</label>
+                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="affirmation">Daily Affirmation</label>
+                        <textarea id="affirmation" placeholder="Enter an inspirational message..." rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-generate">Generate Vision Board</button>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <h2>Preview</h2>
+                <div id="visionBoard" class="vision-board">
+                    <p style="text-align: center; color: #999; padding: 40px;">Your vision board will appear here</p>
+                </div>
+                <div class="download-options" id="downloadOptions" style="display: none;">
+                    <button class="btn-download" onclick="downloadBoard('png')">📥 Download as PNG</button>
+                    <button class="btn-download" onclick="downloadBoard('jpeg')">📥 Download as JPEG</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
