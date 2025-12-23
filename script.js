@@ -1,199 +1,178 @@
-// Color picker event listeners
-const themeColorInput = document.getElementById('themeColor');
-const bgColorInput = document.getElementById('bgColor');
-const colorValue = document.getElementById('colorValue');
-const bgColorValue = document.getElementById('bgColorValue');
+// Category Keywords for Image Fetching
+const categoryKeywords = {
+    'Food & Supplements': 'healthy food nutrition',
+    'Inner Peace': 'meditation yoga relaxation',
+    'Workout': 'fitness gym training',
+    'Family': 'family happiness love',
+    'Friends': 'friendship adventure travel',
+    'Relationship': 'love couple romance',
+    'Skin & Hair': 'beauty skincare',
+    'Hobbies': 'creativity hobby art',
+    'Materialistic': 'luxury wealth gold',
+    'Self Improvement': 'growth learning development',
+    'Places to Travel': 'travel adventure world',
+    'Educational Stuff': 'education learning success',
+    'Money': 'wealth finance success'
+};
 
-themeColorInput.addEventListener('change', () => {
-  colorValue.textContent = themeColorInput.value;
-});
-
-bgColorInput.addEventListener('change', () => {
-  bgColorValue.textContent = bgColorInput.value;
-});
-
-// Form submission
-const boardForm = document.getElementById('boardForm');
-boardForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  generateVisionBoard();
-});
-
-function generateVisionBoard() {
-  const title = document.getElementById('title').value.trim();
-  const goalsText = document.getElementById('goals').value.trim();
-  const themeColor = document.getElementById('themeColor').value;
-  const bgColor = document.getElementById('bgColor').value;
-  const imageUrl = document.getElementById('imageUrl').value.trim();
-  const affirmation = document.getElementById('affirmation').value.trim();
-
-  if (!title || !goalsText) {
-    alert('Please fill in the board title and goals!');
-    return;
-  }
-
-  // Parse goals
-  const goals = goalsText
-    .split('\n')
-    .map(g => g.trim())
-    .filter(g => g.length > 0);
-
-  // Create vision board HTML
-  const visionBoard = document.getElementById('visionBoard');
-  visionBoard.style.backgroundColor = bgColor;
-  visionBoard.style.color = themeColor;
-
-  if (imageUrl) {
-    visionBoard.style.backgroundImage = `url('${imageUrl}')`;
-  }
-
-  // Build the vision board content
-  let html = `<div class="vision-board-title" style="color: ${themeColor};">${escapeHtml(title)}</div>`;
-
-  html += '<div class="vision-board-goals">';
-  html += '<h3 style="color: ' + themeColor + ';">Goals</h3>';
-  html += '<ul>';
-  goals.forEach(goal => {
-    html += `<li style="color: ${themeColor};">• ${escapeHtml(goal)}</li>`;
-  });
-  html += '</ul></div>';
-
-  if (affirmation) {
-    html += `<div class="vision-board-affirmation" style="color: ${themeColor}; background-color: rgba(255, 255, 255, 0.2); border: 2px solid ${themeColor};">“${escapeHtml(affirmation)}”</div>`;
-  }
-
-  visionBoard.innerHTML = html;
-
-  // Show download buttons
-  document.getElementById('downloadOptions').style.display = 'flex';
-}
-
-function downloadBoard(format) {
-  const visionBoard = document.getElementById('visionBoard');
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  // Set canvas dimensions
-  const width = visionBoard.offsetWidth;
-  const height = visionBoard.offsetHeight;
-  canvas.width = width;
-  canvas.height = height;
-
-  // Draw background
-  const bgColor = document.getElementById('bgColor').value;
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, width, height);
-
-  // Draw background image if exists
-  const imageUrl = document.getElementById('imageUrl').value.trim();
-  if (imageUrl) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, width, height);
-      // Draw semi-transparent overlay
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillRect(0, 0, width, height);
-      drawCanvasContent(ctx, width, height);
-      downloadCanvasAs(canvas, format);
-    };
-    img.onerror = () => {
-      // If image fails to load, just draw text
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillRect(0, 0, width, height);
-      drawCanvasContent(ctx, width, height);
-      downloadCanvasAs(canvas, format);
-    };
-    img.src = imageUrl;
-  } else {
-    // Draw overlay
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.fillRect(0, 0, width, height);
-    drawCanvasContent(ctx, width, height);
-    downloadCanvasAs(canvas, format);
-  }
-}
-
-function drawCanvasContent(ctx, width, height) {
-  const themeColor = document.getElementById('themeColor').value;
-  const title = document.getElementById('title').value;
-  const goalsText = document.getElementById('goals').value;
-  const affirmation = document.getElementById('affirmation').value;
-
-  const goals = goalsText
-    .split('\n')
-    .map(g => g.trim())
-    .filter(g => g.length > 0);
-
-  // Set text color
-  ctx.fillStyle = themeColor;
-  ctx.font = 'bold 48px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-
-  // Draw title
-  const titleY = 40;
-  const words = title.split(' ');
-  let line = '';
-  let y = titleY;
-  const maxWidth = width - 80;
-
-  ctx.font = 'bold 40px Arial';
-  words.forEach(word => {
-    const testLine = line + word + ' ';
-    const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && line) {
-      ctx.fillText(line, width / 2, y);
-      line = word + ' ';
-      y += 50;
-    } else {
-      line = testLine;
+// Fetch image from Unsplash
+async function fetchImage(query) {
+    try {
+        const imageUrl = `https://source.unsplash.com/400x300/?${encodeURIComponent(query)}`;
+        return imageUrl;
+    } catch (error) {
+        return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23667eea%22 width=%22400%22 height=%22300%22/%3E%3C/svg%3E';
     }
-  });
-  ctx.fillText(line, width / 2, y);
-
-  // Draw goals
-  ctx.font = 'bold 20px Arial';
-  y += 80;
-  ctx.fillText('Goals', width / 2, y);
-  y += 40;
-
-  ctx.font = '16px Arial';
-  goals.slice(0, 5).forEach(goal => {
-    const goalText = '• ' + goal.substring(0, 40);
-    ctx.fillText(goalText, width / 2, y);
-    y += 30;
-  });
-
-  // Draw affirmation
-  if (affirmation) {
-    ctx.font = 'italic 18px Arial';
-    y = height - 80;
-    const affText = '“' + affirmation.substring(0, 50) + '...”';
-    ctx.fillText(affText, width / 2, y);
-  }
 }
 
-function downloadCanvasAs(canvas, format) {
-  const link = document.createElement('a');
-  const timestamp = new Date().toISOString().slice(0, 10);
-  const title = document.getElementById('title').value.replace(/\s+/g, '_');
+// Parse vision input
+function parseVisionInput(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    const categories = [];
+    let currentCategory = null;
+    let currentGoals = [];
 
-  if (format === 'png') {
-    link.href = canvas.toDataURL('image/png');
-    link.download = `vision-board-${title}-${timestamp}.png`;
-  } else if (format === 'jpeg') {
-    link.href = canvas.toDataURL('image/jpeg', 0.95);
-    link.download = `vision-board-${title}-${timestamp}.jpeg`;
-  }
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line) continue;
+        if (i + 1 < lines.length && lines[i + 1].includes(',')) {
+            if (currentCategory) {
+                categories.push({ name: currentCategory, goals: currentGoals });
+            }
+            currentCategory = line;
+            currentGoals = [];
+        } else if (currentCategory && line.includes(',')) {
+            currentGoals = line.split(',').map(g => g.trim());
+        } else if (currentCategory && !line.includes(',')) {
+            currentGoals.push(line);
+        } else if (!currentCategory) {
+            currentCategory = line;
+        }
+    }
 
-  link.click();
+    if (currentCategory) {
+        categories.push({ name: currentCategory, goals: currentGoals });
+    }
+    return categories;
 }
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+// Generate Vision Board
+async function generateBoard() {
+    const title = document.getElementById('boardTitle').value.trim();
+    const goalsText = document.getElementById('visionGoals').value.trim();
+    const messageDiv = document.getElementById('message');
+
+    if (!title || !goalsText) {
+        messageDiv.innerHTML = 'Please enter both title and goals!';
+        messageDiv.className = 'message error';
+        return;
+    }
+
+    messageDiv.innerHTML = 'Generating your vision board...';
+    messageDiv.className = 'message';
+
+    try {
+        const categories = parseVisionInput(goalsText);
+        if (categories.length === 0) {
+            messageDiv.innerHTML = 'No valid categories found!';
+            messageDiv.className = 'message error';
+            return;
+        }
+
+        const categoryPromises = categories.map(async (cat) => {
+            const keyword = categoryKeywords[cat.name] || cat.name;
+            const imageUrl = await fetchImage(keyword);
+            return { ...cat, image: imageUrl };
+        });
+
+        const categoriesWithImages = await Promise.all(categoryPromises);
+        displayBoard(title, categoriesWithImages);
+        messageDiv.innerHTML = 'Vision board created successfully!';
+        messageDiv.className = 'message success';
+    } catch (error) {
+        messageDiv.innerHTML = 'Error generating board. Please try again.';
+        messageDiv.className = 'message error';
+    }
 }
+
+// Display Board
+function displayBoard(title, categories) {
+    const boardContainer = document.getElementById('boardContainer');
+    const boardTitle = boardContainer.querySelector('.board-title');
+    const categoriesGrid = document.getElementById('categoriesGrid');
+
+    boardTitle.textContent = title.toUpperCase();
+    categoriesGrid.innerHTML = '';
+
+    categories.forEach(category => {
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.innerHTML = `
+            <img src="${category.image}" alt="${category.name}" class="category-image" />
+            <div class="category-content">
+                <h3 class="category-name">${category.name}</h3>
+                <div class="category-goals">
+                    ${category.goals.map(goal => `<div class="goal-item">${goal}</div>`).join('')}
+                </div>
+            </div>
+        `;
+        categoriesGrid.appendChild(card);
+    });
+
+    boardContainer.style.display = 'block';
+    boardContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Download Board
+function downloadBoard() {
+    const boardContainer = document.getElementById('boardContainer');
+    if (!boardContainer || boardContainer.style.display === 'none') {
+        alert('Please generate a board first!');
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload = () => {
+        html2canvas(boardContainer, {
+            backgroundColor: '#0a0e27',
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'vision-board-' + new Date().getTime() + '.png';
+            link.click();
+        }).catch(err => {
+            alert('Error downloading board. Please try again.');
+        });
+    };
+    document.head.appendChild(script);
+}
+
+// Share Board
+function shareBoard() {
+    const title = document.getElementById('boardTitle').value;
+    const shareText = `Check out my 2025 Vision Board: ${title}`;
+    if (navigator.share) {
+        navigator.share({ title: title, text: shareText });
+    } else {
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Shared text copied to clipboard!');
+        });
+    }
+}
+
+// Clear All
+function clearAll() {
+    if (confirm('Are you sure you want to clear everything?')) {
+        document.getElementById('boardTitle').value = '';
+        document.getElementById('visionGoals').value = '';
+        document.getElementById('message').innerHTML = '';
+        document.getElementById('boardContainer').style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Vision Board Creator v2.0 Loaded');
+});
